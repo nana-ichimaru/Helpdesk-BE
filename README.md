@@ -412,22 +412,27 @@ eval "$(pyenv init -)"
 
 <h3>8.（任意）インストール状況の最終確認</h3>
 
+<p>以下のコマンドを実行し、期待される出力が表示されることを確認してください。</p>
+
 <pre><code>brew --version
 python -V
 pyenv versions
 poetry --version
 </code></pre>
 
-<p>
-<strong>すべて以下を満たしていれば環境構築は完了です。</strong>
-</p>
+<p><strong>確認ポイント（例）</strong></p>
 
-<ul>
-  <li>Homebrew のバージョンが表示される</li>
-  <li>Python のバージョンが <code>3.14.0</code></li>
-  <li><code>pyenv versions</code> で <code>3.14.0</code> に <code>*</code> が付いている</li>
-  <li>Poetry のバージョンが <code>2.x.x</code></li>
-</ul>
+<pre><code>Homebrew 5.x.x
+Python 3.14.0
+  system
+* 3.14.0
+Poetry (version 2.x.x)
+</code></pre>
+
+<p>
+※ バージョン番号の細かい差異は問題ありません。  <br />
+※ pyenv で指定した Python バージョンに <code>*</code> が付いていることを確認してください。
+</p>
 
 </details>
 
