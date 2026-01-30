@@ -219,7 +219,7 @@ API やロジック層から DB 操作を分離することで、責務を明確
 - Docker
 - Docker Compose（v2）
 - Python 3.14.0
-- Poetry 2.2.1
+- Poetry 2.x.x
 
 <details>
 <summary>前提条件・環境構築手順（Python / Poetry が未インストールの場合）</summary>
@@ -229,7 +229,7 @@ API やロジック層から DB 操作を分離することで、責務を明確
 <ul>
   <li>OS：macOS / Windows / Linux（動作確認・手順例は macOS）</li>
   <li>Python：<strong>3.14.0</strong></li>
-  <li>パッケージ管理ツール：<strong>Poetry 2.2.1</strong></li>
+  <li>パッケージ管理ツール：<strong>Poetry 2.x.x</strong></li>
 </ul>
 
 <p>
@@ -264,6 +264,14 @@ Homebrew は macOS 用のパッケージ管理システムです。
 <pre><code>brew --version
 </code></pre>
 
+<p>
+<strong>成功条件：</strong><br />
+以下のように Homebrew のバージョンが表示されること。
+</p>
+
+<pre><code>Homebrew 5.0.12
+</code></pre>
+
 <hr />
 
 <h3>2. pyenv のインストール</h3>
@@ -281,16 +289,38 @@ pyenv は、Python 本体ではなく、
 <h3>3. pyenv の初期設定（zsh）</h3>
 
 <p>
-~/.zshrc に以下を追記します。
+まず、現在使用しているシェルを確認します。
+</p>
+
+<pre><code>echo $SHELL
+</code></pre>
+
+<p>
+<strong>成功条件：</strong><br />
+<code>/bin/zsh</code> または <code>/usr/bin/zsh</code> が表示されること。
+</p>
+
+<p>
+次に、<code>~/.zshrc</code> をエディタで開きます。<br />
+ファイルが存在しない場合は新規作成します。
+</p>
+
+<pre><code>touch ~/.zshrc
+open ~/.zshrc
+</code></pre>
+
+<p>
+以下の内容を <code>~/.zshrc</code> に追記してください。
 </p>
 
 <pre><code>export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
 </code></pre>
 
 <p>
-設定を反映します。
+編集後、ターミナルを再起動するか、以下のコマンドで設定を反映します。
 </p>
 
 <pre><code>source ~/.zshrc
@@ -304,7 +334,8 @@ eval "$(pyenv init - zsh)"
 </code></pre>
 
 <p>
-指定バージョン（3.14.0）がインストール可能かを確認します。
+<strong>成功条件：</strong><br />
+出力一覧の中に <code>3.14.0</code> が含まれていること。
 </p>
 
 <hr />
@@ -330,18 +361,33 @@ eval "$(pyenv init - zsh)"
 </p>
 
 <pre><code>python -V
-pyenv versions
+</code></pre>
+
+<p>
+<strong>成功条件：</strong>
+</p>
+
+<pre><code>Python 3.14.0
+</code></pre>
+
+<pre><code>pyenv versions
+</code></pre>
+
+<p>
+<strong>成功条件：</strong><br />
+<code>*</code> が付いた Python が <code>3.14.0</code> であり、以下のように表示されること。
+</p>
+
+<pre><code>  system
+  3.13.9
+* 3.14.0 
 </code></pre>
 
 <hr />
 
-<h3>7. Poetry 2.2.1 のインストール</h3>
+<h3>7. Poetry 2.x.x のインストール</h3>
 
-<p>
-Poetry の公式インストーラを使用して、バージョンを指定してインストールします。
-</p>
-
-<pre><code>curl -sSL https://install.python-poetry.org | POETRY_VERSION=2.2.1 python3 -
+<pre><code>brew install poetry
 </code></pre>
 
 <p>
@@ -352,6 +398,13 @@ Poetry の公式インストーラを使用して、バージョンを指定し�
 </code></pre>
 
 <p>
+<strong>成功条件：</strong>
+</p>
+
+<pre><code>Poetry (version 2.x.x)
+</code></pre>
+
+<p>
 コマンドが見つからない場合は、Poetry のインストール先が PATH に含まれているか確認してください。
 </p>
 
@@ -359,14 +412,24 @@ Poetry の公式インストーラを使用して、バージョンを指定し�
 
 <h3>8.（任意）インストール状況の最終確認</h3>
 
-<pre><code>python -V
+<pre><code>brew --version
+python -V
 pyenv versions
 poetry --version
 </code></pre>
 
-</details>
+<p>
+<strong>すべて以下を満たしていれば環境構築は完了です。</strong>
+</p>
 
-## 環境構築手順
+<ul>
+  <li>Homebrew のバージョンが表示される</li>
+  <li>Python のバージョンが <code>3.14.0</code></li>
+  <li><code>pyenv versions</code> で <code>3.14.0</code> に <code>*</code> が付いている</li>
+  <li>Poetry のバージョンが <code>2.x.x</code></li>
+</ul>
+
+</details>
 
 
 ### 1. リポジトリをクローン
@@ -377,12 +440,15 @@ cd Helpdesk-BE
 
 ### 2. Poetry で Python を指定して依存関係を入れる
 ```bash
-poetry env use python3.14
 poetry install
 ```
 
 ### 3. 環境変数を設定（.env を作成）
-.env は git 管理されないため、自分の環境に合わせて .env を作成し、必要な環境変数を設定する。
+アプリケーションおよびデータベース接続に必要な環境変数を設定します。  
+`.env` ファイルにはパスワードなどの機密情報が含まれるため、git では管理されません。
+
+リポジトリに含まれている `.env.example` をコピーして `.env` を作成し、  
+必要に応じて各項目の値を自分の環境に合わせて編集してください。
 
 ### ４. Docker（依存サービス）を起動
 ```bash
